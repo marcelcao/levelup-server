@@ -37,6 +37,7 @@ class EventView(ViewSet):
         uid = request.META['HTTP_AUTHORIZATION']
         gamer = Gamer.objects.get(uid=uid)
 
+
         for event in events:
             # Check to see if there is a row in the Event Games table that has the passed in gamer and event
             event.joined = len(EventGamer.objects.filter(
