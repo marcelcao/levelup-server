@@ -33,8 +33,17 @@ class EventView(ViewSet):
         Returns:
             Response -- JSON serialized list of game types
         """
-        event = Event.objects.all()
-        serializer = EventSerializer(event, many=True)
+        events = Event.objects.all()
+        uid = request.META['HTTP_AUTHORIZATION']
+        gamer = Gamer.objects.get(uid=uid)
+
+
+        for event in events:
+            # Check to see if there is a row in the Event Games table that has the passed in gamer and event
+            event.joined = len(EventGamer.objects.filter(
+                gamer=gamer, event=event)) > 0
+
+        serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
     
     def create(self, request):
@@ -87,9 +96,9 @@ class EventView(ViewSet):
     def signup(self, request, pk):
         """Post request for a user to sign up for an event"""
 
-        gamer = Gamer.objects.get(uid=request.data["user_id"])
+        gamer = Gamer.objects.get(uid=request.META['HTTP_AUTHORIZATION'])
         event = Event.objects.get(pk=pk)
-        attendee = EventGamer.objects.create(
+        EventGamer.objects.create(
             gamer=gamer,
             event=event
         )
@@ -99,7 +108,7 @@ class EventView(ViewSet):
     def leave(self, request, pk):
         """Delete request for a user to sign up for an event"""
 
-        gamer = Gamer.objects.get(uid=request.data["user_id"])
+        gamer = Gamer.objects.get(uid=request.META['HTTP_AUTHORIZATION'])
         event = Event.objects.get(pk=pk)
         attendee = EventGamer.objects.get(
             gamer=gamer,
@@ -113,5 +122,5 @@ class EventSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Event
-        fields = ('id', 'game', 'description', 'date', 'time', 'organizer')
+        fields = ('id', 'game', 'description', 'date', 'time', 'organizer', 'joined')
         depth = 2
