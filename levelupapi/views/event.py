@@ -98,7 +98,7 @@ class EventView(ViewSet):
 
         gamer = Gamer.objects.get(uid=request.META['HTTP_AUTHORIZATION'])
         event = Event.objects.get(pk=pk)
-        attendee = EventGamer.objects.create(
+        EventGamer.objects.create(
             gamer=gamer,
             event=event
         )
