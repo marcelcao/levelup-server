@@ -32,8 +32,8 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized list of game types
         """
-        game = Game.objects.all()
-        games = Game.objects.annotate(event_count=Count('events'))
+        games = Game.objects.all()
+        game = Game.objects.annotate(event_count=Count('events'))
         
         game_type = request.query_params.get('type', None)
         if game_type is not None:
