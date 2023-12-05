@@ -7,13 +7,11 @@ from levelupapi.views.game import GameSerializer
 class GameTests(APITestCase):
 
     # Add any fixtures you want to run to build the test database
-    fixtures = ['users', 'tokens', 'gamers', 'game_types', 'games', 'events']
+    fixtures = ['gamers', 'game_types', 'games', 'events']
     
     def setUp(self):
         # Grab the first Gamer object from the database and add their token to the headers
         self.gamer = Gamer.objects.first()
-        token = Token.objects.get(user=self.gamer.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
 
     def test_create_game(self):
         """Create game test"""
@@ -28,6 +26,7 @@ class GameTests(APITestCase):
             "skill_level": 5,
             "number_of_players": 6,
             "game_type": 1,
+            "gamer": 1,
         }
 
         response = self.client.post(url, game, format='json')
